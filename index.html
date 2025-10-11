@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Duration Window — Kids Edition (credited to Lim Kim Sze)</title>
+<style>
+  :root{
+    /* Playful palette */
+    --ink:#0f172a; --muted:#475569; --line:#e5e7eb;
+    --accent:#7c3aed; --panel:#ffffff;
+
+    --sky1:#fdf2f8;   /* pink-50 */
+    --sky2:#eff6ff;   /* blue-50 */
+    --panelGrad1:#fff7ed; /* orange-50 */
+    --panelGrad2:#eef2ff; /* indigo-50 */
+
+    /* Hour bubbles */
+    --night:#a78bfa;      /* purple */
+    --preDawn:#60a5fa;    /* blue */
+    --sunrise:#f59e0b;    /* amber */
+    --day:#fde047;        /* yellow */
+    --afternoon:#34d399;  /* emerald */
+    --sunset:#fb7185;     /* rose */
+    --evening:#22d3ee;    /* cyan */
+
+    /* Slider rail */
+    --rail:#0f172a;
+
+    /* Label colors */
+    --lab12:#16a34a;  /* green */
+    --lab24:#dc2626;  /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0; font:18px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Arial; color:var(--ink);
+    background:
+      radial-gradient(1200px 500px at 10% -10%, rgba(255,182,193,.35), transparent 40%),
+      radial-gradient(1200px 500px at 110% -10%, rgba(173,216,230,.35), transparent 40%),
+      linear-gradient(180deg,var(--sky1),var(--sky2) 60%);
+  }
+  header{max-width:1200px;margin:20px auto 0;padding:0 16px}
+  h1{margin:0 0 6px;font-size:36px;letter-spacing:.3px}
+  .note{color:#334155;margin-bottom:6px;font-size:18px}
+  .credit{color:#6b7280;font-weight:900;margin-bottom:10px}
+  .credit b{color:#111827}
+
+  main{max-width:1200px;margin:16px auto 28px;padding:0 16px}
+  .card{
+    background:linear-gradient(135deg,var(--panelGrad1),var(--panelGrad2));
+    border:2px solid #e9ecef; border-radius:20px; padding:16px;
+    box-shadow:0 10px 28px rgba(17,24,39,.12);
+  }
+  .qtext{font-weight:900;font-size:22px;margin:6px 0 12px}
+  .boxPill{display:inline-block;padding:6px 12px;border:2px solid #111827;border-radius:12px;background:#fff;font-weight:900;letter-spacing:.3px}
+
+  .vizWrap{
+    position:relative;display:block;border:2px dashed rgba(148,163,184,.6);border-radius:18px;padding:12px;
+    background:
+      radial-gradient(1500px 320px at 50% -80px, rgba(124,58,237,.10), transparent 70%),
+      linear-gradient(180deg,rgba(255,255,255,.9),rgba(255,255,255,.85));
+  }
+  #viz{display:block;width:100%}
+  #viz svg{display:block;width:100%}
+
+  /* ANSWER BAR */
+  .answerBar{
+    margin:12px 0; padding:12px;
+    background:linear-gradient(90deg, #fff, #fef3c7 30%, #e0f2fe 70%, #fff);
+    border:2px solid var(--line); border-radius:14px;
+    display:grid; grid-template-columns:1fr auto; gap:12px; align-items:center;
+  }
+  .answerInputs{display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
+  .answerInputs label{font-weight:900}
+  .answerInputs input{
+    width:110px; padding:10px 12px; border:2px solid var(--line); border-radius:10px;
+    font:900 18px/1 system-ui; text-align:center; background:#ffffffaa;
+  }
+  .answerBtns{display:flex; gap:10px; flex-wrap:wrap;}
+  .answerBtns button{
+    padding:12px 16px;border:none;border-radius:12px;background:linear-gradient(135deg,#8b5cf6,#f472b6);
+    color:#fff;font-weight:900;cursor:pointer;font-size:16px;box-shadow:0 6px 12px rgba(139,92,246,.25);
+  }
+  .answerBtns .secondary{background:linear-gradient(135deg,#ffffff,#e5e7eb); color:#0f172a; border:2px solid var(--line); box-shadow:none}
+  .answerStatus{grid-column:1 / -1; font-weight:900; min-height:1.2em}
+  .ok{color:#16a34a} .no{color:#dc2626}
+
+  /* Slider panel */
+  .sliderPanel{
+    margin-top:12px;border:2px dashed var(--line);border-radius:14px;
+    background:
+      repeating-linear-gradient(45deg, #fafafa, #fafafa 14px, #fefce8 14px, #fefce8 28px);
+    padding:10px
+  }
+  .panelHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .panelTitle{font-weight:900;font-size:18px}
+  .rowSlider{
+    display:grid;grid-template-columns:160px 1fr 1fr 240px 220px auto;
+    gap:12px;align-items:center;padding:12px;border:2px solid var(--line);border-radius:12px;
+    background:linear-gradient(135deg, #ffffff, #f1f5f9); margin-bottom:10px;font-size:18px;
+    box-shadow:0 4px 10px rgba(148,163,184,.25);
+  }
+  .badgeColor{display:inline-flex;align-items:center;gap:10px;font-weight:900;font-size:18px}
+  .badgeDot{width:18px;height:18px;border-radius:50%;outline:2px solid #ffffff;box-shadow:0 0 0 2px rgba(0,0,0,.08)}
+  .rowSlider > div > div{font-weight:800;margin-bottom:4px;font-size:16px}
+  .rowSlider input[type="range"]{-webkit-appearance:none;appearance:none;height:20px;background:#e5e7eb;border-radius:999px;width:100%}
+  .rowSlider input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#fff,#f8fafc);border:3px solid #111827;box-shadow:0 2px 4px rgba(0,0,0,.15)}
+  .rowSlider input[type="range"]::-moz-range-thumb{width:28px;height:28px;border-radius:50%;background:#fff;border:3px solid #111827}
+  .hmInputs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .hmInputs input{width:100%;padding:10px 12px;border:2px solid var(--line);border-radius:10px;font-weight:900;font-size:18px;text-align:center;letter-spacing:.5px;background:#fff}
+  .delBtn{background:linear-gradient(135deg,#ffffff,#e5e7eb);color:#0f172a;border:2px solid var(--line);padding:10px 12px;border-radius:10px;font-size:16px}
+
+  /* Axis & labels */
+  .lab12{font:900 18px/1.05 system-ui,Segoe UI,Roboto,Arial; fill:var(--lab12)}
+  .lab24{font:800 18px/1.05 system-ui,Segoe UI,Roboto,Arial; fill:var(--lab24)}
+  .tickHour{stroke:var(--rail);stroke-width:3}
+  .tick10{stroke:#334155;stroke-width:2}
+  .tick5{stroke:#94a3b8;stroke-width:1.5}
+
+  /* Endpoint labels (boxed) */
+  .end12{font:900 20px/1.05 system-ui,Segoe UI,Roboto,Arial; fill:var(--lab12)}
+  .end24{font:800 18px/1.05 system-ui,Segoe UI,Roboto,Arial; fill:var(--lab24)}
+  .tagSmall{font:800 13px/1 system-ui,Segoe UI,Roboto,Arial; fill:#0f172a; opacity:.9}
+
+  /* Duration text */
+  .durOnBand{
+    font:900 22px/1.1 system-ui,Segoe UI,Roboto,Arial;
+    fill:#0f172a; paint-order:stroke; stroke:#ffffff; stroke-width:6px;
+  }
+
+  /* Time icons (emoji on colorful bubbles) */
+  .timeIcon{font: 900 24px/1.1 system-ui,Segoe UI,Apple Color Emoji,Segoe UI Emoji,Noto Color Emoji,Arial;}
+  .bubble{opacity:.95; filter: drop-shadow(0 3px 6px rgba(0,0,0,.15));}
+</style>
+</head>
+<body>
+<header>
+  <h1>Find the Duration — 24-Hour Time</h1>
+  <div class="note">Colourful, kid-friendly timeline with hourly icons and forward-moving sliders.</div>
+  <div class="credit">Programme by <b>Lim Kim Sze</b></div>
+</header>
+
+<main>
+  <div class="card">
+    <div class="qtext">
+      From <span id="tStart" class="boxPill">—</span> to <span id="tEnd" class="boxPill">—</span>, how long?
+    </div>
+
+    <div class="vizWrap">
+      <div id="viz" aria-live="polite"></div>
+    </div>
+
+    <!-- ANSWER BAR -->
+    <div class="answerBar" id="answerBar">
+      <div class="answerInputs">
+        <label for="ansH">Hours</label>
+        <input id="ansH" type="number" min="0" step="1" placeholder="hh" inputmode="numeric"/>
+        <label for="ansM">Minutes</label>
+        <input id="ansM" type="number" min="0" max="59" step="1" placeholder="mm" inputmode="numeric"/>
+      </div>
+      <div class="answerBtns">
+        <button id="checkAns">Check</button>
+        <button id="nextQ" class="secondary">Next question</button>
+        <button id="clearAns" class="secondary">Clear</button>
+      </div>
+      <div class="answerStatus" id="ansStatus">&nbsp;</div>
+      <div style="grid-column:1 / -1; font-size:14px;color:#475569;">Tip: Try the colorful sliders below to discover the answer.</div>
+    </div>
+
+    <!-- SLIDERS -->
+    <div class="sliderPanel">
+      <div class="panelHead">
+        <div class="panelTitle">Duration sliders</div>
+        <button id="addSliderMain" class="secondary">Add Slider</button>
+      </div>
+      <div id="sliderStripMain"></div>
+    </div>
+  </div>
+</main>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- helpers ---------- */
+  const rnd=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+  const pad=n=>String(n).padStart(2,'0');
+  const mod1440=x=>((x%1440)+1440)%1440;
+  const fmt24=min=>`${pad(Math.floor(mod1440(min)/60))}${pad(mod1440(min)%60)}`;
+  const fmt12=min=>{
+    const m=mod1440(min); let h24=Math.floor(m/60), mi=m%60; const am=h24<12; let h=h24%12; if(h===0)h=12;
+    return `${h} ${pad(mi)} ${am?'AM':'PM'}`;
+  };
+  const toHourLabel=h24Raw=>{
+    const h24=(h24Raw%24+24)%24; const am=h24<12; let h=h24%12; if(h===0)h=12;
+    return `${h} 00 ${am?'AM':'PM'}`;
+  };
+  const parseHHMM = (txt)=>{
+    const s=(txt||'').trim();
+    if(!/^\d{3,4}$/.test(s)) return null;
+    const v = s.length===3 ? '0'+s : s;
+    const hh=+v.slice(0,2), mm=+v.slice(2,4);
+    if(hh<0||hh>23||mm<0||mm>59) return null;
+    return hh*60+mm;
+  };
+
+  /* ---------- data ---------- */
+  function makeQuestion(){
+    const start=rnd(0,287)*5;
+    const friendly=[10,15,20,25,30,35,40,45,50,55,60,75,90,105,120,150,180,210,240,300,360,420,480,540,600,660,720];
+    const dur=friendly[rnd(0,friendly.length-1)];
+    const end=(start+dur)%1440, overMid=(start+dur)>=1440;
+    return {start,end,dur,overMid};
+  }
+
+  /* ---------- DOM ---------- */
+  const tStart=document.getElementById('tStart'), tEnd=document.getElementById('tEnd');
+  const viz=document.getElementById('viz');
+  const addSliderMain=document.getElementById('addSliderMain'), sliderStripMain=document.getElementById('sliderStripMain');
+  const nextQBtn=document.getElementById('nextQ');
+
+  // Answer bar elements
+  const ansH=document.getElementById('ansH'), ansM=document.getElementById('ansM');
+  const checkAns=document.getElementById('checkAns'), clearAns=document.getElementById('clearAns'), ansStatus=document.getElementById('ansStatus');
+
+  /* ---------- state ---------- */
+  let q = makeQuestion();
+  let slidersMain=[];
+  const colors=['#60a5fa','#f87171','#f59e0b','#34d399','#8b5cf6','#06b6d4','#fb7185','#22c55e','#f472b6','#fbbf24'];
+
+  /* ---------- SVG helpers ---------- */
+  function mountSVG(container, height){
+    const s=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    const W = container.clientWidth||1000;
+    s.setAttribute('viewBox',`0 0 ${W} ${height}`);
+    s.style.width='100%'; s.style.height=height+'px';
+    container.innerHTML=''; container.appendChild(s); return s;
+  }
+  function rect(s,x,y,w,h,rx,fill,op=1){
+    const r=document.createElementNS(s.namespaceURI,'rect');
+    r.setAttribute('x',x); r.setAttribute('y',y); r.setAttribute('width',w); r.setAttribute('height',h);
+    if(rx!=null) r.setAttribute('rx',rx);
+    r.setAttribute('fill',fill);
+    if(op!==1) r.setAttribute('opacity',op);
+    s.appendChild(r); return r;
+  }
+  function line(s,x1,y1,x2,y2,sw,col,cap, dash){
+    const l=document.createElementNS(s.namespaceURI,'line');
+    l.setAttribute('x1',x1); l.setAttribute('x2',x2); l.setAttribute('y1',y1); l.setAttribute('y2',y2);
+    if(sw) l.setAttribute('stroke-width',sw); if(col) l.setAttribute('stroke',col);
+    if(cap) l.setAttribute('stroke-linecap',cap); if(dash) l.setAttribute('stroke-dasharray',dash);
+    s.appendChild(l); return l;
+  }
+  function text(s,x,y,str,cls,anchor){
+    const t=document.createElementNS(s.namespaceURI,'text');
+    t.setAttribute('x',x); t.setAttribute('y',y);
+    if(cls) t.setAttribute('class',cls); if(anchor) t.setAttribute('text-anchor',anchor);
+    t.textContent=str; s.appendChild(t); return t;
+  }
+  function circle(s,cx,cy,r,fill){
+    const c=document.createElementNS(s.namespaceURI,'circle');
+    c.setAttribute('cx',cx); c.setAttribute('cy',cy); c.setAttribute('r',r); c.setAttribute('fill',fill); c.setAttribute('class','bubble');
+    s.appendChild(c); return c;
+  }
+  function boxTexts(svg, texts, pad=8, rx=12, stroke='#111827', fill='#fff'){
+    if(!texts || !texts.length) return;
+    const bbs = texts.map(t=>t.getBBox());
+    const x = Math.min(...bbs.map(b=>b.x)) - pad;
+    const y = Math.min(...bbs.map(b=>b.y)) - pad;
+    const r = Math.max(...bbs.map(b=>b.x + b.width)) - Math.min(...bbs.map(b=>b.x)) + pad*2;
+    const h = Math.max(...bbs.map(b=>b.y + b.height)) - Math.min(...bbs.map(b=>b.y)) + pad*2;
+    const rectEl = document.createElementNS(svg.namespaceURI,'rect');
+    rectEl.setAttribute('x',x); rectEl.setAttribute('y',y);
+    rectEl.setAttribute('width',r); rectEl.setAttribute('height',h);
+    rectEl.setAttribute('rx',rx); rectEl.setAttribute('fill',fill);
+    rectEl.setAttribute('stroke',stroke); rectEl.setAttribute('stroke-width','2.5');
+    rectEl.setAttribute('filter','drop-shadow(0 3px 6px rgba(0,0,0,.15))');
+    svg.insertBefore(rectEl, texts[0]);
+  }
+
+  /* ---------- forward duration helpers ---------- */
+  const questionTrueMins = (qq)=> (qq.end + (qq.overMid?1440:0)) - qq.start;
+  const forwardDiff = (a,b)=> ((b - a + 1440) % 1440);
+  const fmtDurSmart = (m)=>{
+    const h = Math.floor(m/60), mi = m%60;
+    if(h>0 && mi>0) return `${h} h ${mi} min`;
+    if(h>0 && mi===0) return `${h} h`;
+    if(h===0 && mi>0) return `${mi} min`;
+    return `0 min`;
+  };
+  function forwardPairInWindow(a, b, winStart, winEnd){
+    const PERIOD = 1440;
+    let s = a;
+    let e = b < a ? b + PERIOD : b;
+    while (e > winEnd)   { s -= PERIOD; e -= PERIOD; }
+    while (s < winStart) { s += PERIOD; e += PERIOD; }
+    return [s, e];
+  }
+
+  /* ---------- hour → emoji + bubble color mapping ---------- */
+  const HOUR_ICONS = [
+    {e:'🌙', label:'Midnight',     bg:'var(--night)'},
+    {e:'🌙', label:'Late Night',   bg:'var(--night)'},
+    {e:'🌙', label:'Late Night',   bg:'var(--night)'},
+    {e:'🌙', label:'Late Night',   bg:'var(--night)'},
+    {e:'🌃', label:'Pre-dawn',     bg:'var(--preDawn)'},
+    {e:'🌅', label:'Sunrise',      bg:'var(--sunrise)'},
+    {e:'🌤️',label:'Morning',      bg:'var(--day)'},
+    {e:'🌤️',label:'Morning',      bg:'var(--day)'},
+    {e:'🌤️',label:'Morning',      bg:'var(--day)'},
+    {e:'☀️', label:'Late Morning', bg:'var(--day)'},
+    {e:'☀️', label:'Late Morning', bg:'var(--day)'},
+    {e:'☀️', label:'Late Morning', bg:'var(--day)'},
+    {e:'☀️', label:'Noon',         bg:'var(--day)'},
+    {e:'🌤️',label:'Afternoon',    bg:'var(--afternoon)'},
+    {e:'🌤️',label:'Afternoon',    bg:'var(--afternoon)'},
+    {e:'🌤️',label:'Afternoon',    bg:'var(--afternoon)'},
+    {e:'🌥️',label:'Late Afternoon',bg:'var(--afternoon)'},
+    {e:'🌇', label:'Sunset',       bg:'var(--sunset)'},
+    {e:'🌆', label:'Dusk',         bg:'var(--sunset)'},
+    {e:'🌃', label:'Evening',      bg:'var(--evening)'},
+    {e:'🌙', label:'Night',        bg:'var(--night)'},
+    {e:'🌙', label:'Night',        bg:'var(--night)'},
+    {e:'🌙', label:'Night',        bg:'var(--night)'},
+    {e:'🌙', label:'Late Night',   bg:'var(--night)'}
+  ];
+
+  /* ---------- draw window (solid slider bands) ---------- */
+  function drawWindow(container, question, sliders){
+    const baseH = 560;
+    const H = baseH;
+    const svg = mountSVG(container, H);
+
+    const padX = 40;
+    const W = container.clientWidth||1000;
+
+    const bandH = 360;
+
+    const cyBase  = baseH/2 + 10;  // timeline frame center
+    const cyBlack = cyBase + 76;   // lowered question line
+
+    const bandX0 = padX, bandX1 = W - padX, bandW = bandX1 - bandX0;
+
+    // Window span = Start-1h → End+1h
+    const qDur = questionTrueMins(question);
+    const winStart = question.start - 60;
+    const winEnd   = question.start + qDur + 60;
+    const span = winEnd - winStart;
+    const toX = u => bandX0 + ((u - winStart) / span) * bandW;
+
+    // White window + soft gradient
+    rect(svg, bandX0, cyBase - bandH/2, bandW, bandH, 20, '#fff', 1);
+    const topGrad = document.createElementNS(svg.namespaceURI,'rect');
+    topGrad.setAttribute('x',bandX0); topGrad.setAttribute('y',cyBase-bandH/2);
+    topGrad.setAttribute('width',bandW); topGrad.setAttribute('height',bandH);
+    topGrad.setAttribute('rx',20);
+    topGrad.setAttribute('fill','url(#panelShade)');
+    svg.appendChild(topGrad);
+
+    // Border
+    const border=document.createElementNS(svg.namespaceURI,'rect');
+    border.setAttribute('x',bandX0); border.setAttribute('y',cyBase-bandH/2);
+    border.setAttribute('width',bandW); border.setAttribute('height',bandH);
+    border.setAttribute('rx',20); border.setAttribute('fill','none');
+    border.setAttribute('stroke','#e5e7eb'); border.setAttribute('stroke-width',4);
+    svg.appendChild(border);
+
+    // defs for panel shade
+    let defs = svg.querySelector('defs'); if(!defs){ defs=document.createElementNS(svg.namespaceURI,'defs'); svg.appendChild(defs); }
+    if(!svg.querySelector('#panelShade')){
+      const lg = document.createElementNS(svg.namespaceURI,'linearGradient');
+      lg.setAttribute('id','panelShade'); lg.setAttribute('x1','0'); lg.setAttribute('x2','0'); lg.setAttribute('y1','0'); lg.setAttribute('y2','1');
+      const st1=document.createElementNS(svg.namespaceURI,'stop'); st1.setAttribute('offset','0%'); st1.setAttribute('stop-color','#fffaf0');
+      const st2=document.createElementNS(svg.namespaceURI,'stop'); st2.setAttribute('offset','100%'); st2.setAttribute('stop-color','#f0f9ff');
+      lg.appendChild(st1); lg.appendChild(st2); defs.appendChild(lg);
+    }
+
+    // Axis ticks
+    const topPad = 120;
+    const y0 = cyBase - bandH/2 + topPad;
+    const lenHour = 44, len10 = 30, len5 = 18;
+
+    const firstMin = Math.floor(winStart);
+    for(let m=firstMin; m<=winEnd; m+=5){
+      const x = toX(m);
+      const mm = m % 60;
+      if(mm===0){
+        line(svg, x, y0, x, y0+lenHour, 3, '#0f172a');
+        const hr = Math.floor(mod1440(m)/60);
+        text(svg, x, y0 - 16, toHourLabel(hr), 'lab12', 'middle');
+        const hh = String(hr).padStart(2,'0')+'00';
+        text(svg, x, y0 + lenHour + 22, (hh==='2400'?'0000':hh), 'lab24', 'middle');
+      }else if(mm%10===0){
+        line(svg, x, y0+4, x, y0+4+len10, 2, '#334155');
+      }else{
+        line(svg, x, y0+6, x, y0+6+len5, 1.5, '#94a3b8');
+      }
+    }
+
+    /* Hourly icons on colored bubbles */
+    const iconY = y0 - 46;
+    for(let m = Math.ceil(winStart/60)*60; m <= winEnd; m += 60){
+      const hr = Math.floor(mod1440(m)/60);
+      const {e, label, bg} = HOUR_ICONS[hr];
+      const x = toX(m);
+      circle(svg, x, iconY-4, 16, bg);
+      const t = text(svg, x, iconY, e, 'timeIcon', 'middle');
+      t.setAttribute('aria-label', `${label} (${String(hr).padStart(2,'0')}:00)`);
+      t.setAttribute('title', `${label} (${String(hr).padStart(2,'0')}:00)`);
+    }
+
+    // Black question timeline (flat caps)
+    const qX0 = toX(question.start);
+    const qX1 = toX(question.start + qDur);
+    line(svg, qX0, cyBlack, qX1, cyBlack, 10, '#111827', 'butt');
+
+    // Dotted guides
+    const guideTop = y0 - 6;
+    line(svg, qX0, cyBlack, qX0, guideTop, 2, '#334155', 'round', '6 6');
+    line(svg, qX1, cyBlack, qX1, guideTop, 2, '#334155', 'round', '6 6');
+
+    // Slider bands DIRECTLY BELOW the black line — SOLID color
+    const SH = 64;
+    const gapBelow = 18;
+    const bandTopY = cyBlack + gapBelow;
+    const durY = bandTopY + SH + 24;
+
+    function drawForwardBand(startMin,endMin,color){
+      const dur = forwardDiff(startMin, endMin);
+      if(dur===0) return;
+      const [sN, eN] = forwardPairInWindow(startMin, endMin, winStart, winEnd);
+      const xS  = toX(sN);
+      const xE  = toX(eN);
+      const xMid = toX(sN + dur/2);
+      const r = rect(svg, xS, bandTopY, Math.max(10, xE - xS), SH, 16, color, .98);
+      r.setAttribute('stroke','#0f172a');
+      r.setAttribute('stroke-opacity','0.15');
+      r.setAttribute('stroke-width','2');
+      text(svg, xMid, durY, fmtDurSmart(dur), 'durOnBand', 'middle');
+    }
+    if (sliders && sliders.length){ sliders.forEach(s=> drawForwardBand(s.startRel, s.endRel, s.color)); }
+
+    /* SIDE BOXES: left of start, right of end (aligned to black line) */
+    const sideGap = 12;
+    const sLabel = text(svg, qX0 - sideGap, cyBlack - 18, 'Start', 'tagSmall', 'end');
+    const s12    = text(svg, qX0 - sideGap, cyBlack + 2,  fmt12(question.start), 'end12', 'end');
+    const s24    = text(svg, qX0 - sideGap, cyBlack + 22, fmt24(question.start), 'end24', 'end');
+    boxTexts(svg, [sLabel, s12, s24], 8, 12, '#111827', '#ffffff');
+
+    const endAbs = question.start + qDur;
+    const eLabel = text(svg, qX1 + sideGap, cyBlack - 18, 'End', 'tagSmall', 'start');
+    const e12    = text(svg, qX1 + sideGap, cyBlack + 2,  fmt12(endAbs), 'end12', 'start');
+    const e24    = text(svg, qX1 + sideGap, cyBlack + 22, fmt24(endAbs), 'end24', 'start');
+    boxTexts(svg, [eLabel, e12, e24], 8, 12, '#111827', '#ffffff');
+  }
+
+  /* ---------- slider UI ---------- */
+  function addSliderRow(container, list){
+    const id = Math.random().toString(36).slice(2,8);
+    const color = colors[list.length % colors.length];
+    const row = document.createElement('div');
+    row.className='rowSlider'; row.dataset.id=id;
+
+    row.innerHTML = `
+      <div class="badgeColor"><span class="badgeDot" style="background:${color}"></span> Slider</div>
+      <div><div>Start (range)</div><input type="range" min="0" max="1440" step="1"></div>
+      <div><div>End (range)</div><input type="range" min="0" max="1440" step="1"></div>
+      <div class="hmInputs">
+        <input type="text" placeholder="Start HHMM" aria-label="Start HHMM">
+        <input type="text" placeholder="End HHMM" aria-label="End HHMM">
+      </div>
+      <div style="font-weight:900;">
+        <div>Start: <span class="s24"></span> (<span class="s12"></span>)</div>
+        <div>End: <span class="e24"></span> (<span class="e12"></span>)</div>
+        <div>Duration: <span class="dur" style="font-size:22px;"></span></div>
+      </div>
+      <button class="delBtn" title="Remove">✕</button>
+    `;
+    container.appendChild(row);
+
+    const [sRange,eRange]=row.querySelectorAll('input[type="range"]');
+    const [sTxt,eTxt]=row.querySelectorAll('.hmInputs input');
+    const s24=row.querySelector('.s24'), s12=row.querySelector('.s12');
+    const e24=row.querySelector('.e24'), e12=row.querySelector('.e12');
+    const dEl=row.querySelector('.dur');
+    const del=row.querySelector('.delBtn');
+
+    sRange.value = q.start;
+    eRange.value = q.start;
+    sTxt.value = fmt24(q.start);
+    eTxt.value = fmt24(q.start);
+
+    const entry = { id, color, startRel:+sRange.value, endRel:+eRange.value };
+    list.push(entry);
+
+    const repaint = ()=> drawWindow(viz, q, list);
+
+    const updateReadouts = ()=>{
+      s24.textContent = fmt24(entry.startRel);
+      s12.textContent = fmt12(entry.startRel);
+      e24.textContent = fmt24(entry.endRel);
+      e12.textContent = fmt12(entry.endRel);
+      dEl.textContent = fmtDurSmart(((entry.endRel - entry.startRel + 1440) % 1440));
+    };
+
+    const pushFromRanges = ()=>{
+      entry.startRel = +sRange.value;
+      entry.endRel   = +eRange.value;
+      sTxt.value = fmt24(entry.startRel);
+      eTxt.value = fmt24(entry.endRel);
+      updateReadouts(); repaint();
+    };
+
+    const pushFromText = ()=>{
+      const sVal = parseHHMM(sTxt.value);
+      const eVal = parseHHMM(eTxt.value);
+      if(sVal!=null){ entry.startRel = sVal; sRange.value = sVal; }
+      if(eVal!=null){ entry.endRel   = eVal; eRange.value = eVal; }
+      updateReadouts(); repaint();
+    };
+
+    sRange.addEventListener('input', pushFromRanges);
+    eRange.addEventListener('input', pushFromRanges);
+    sTxt.addEventListener('change', pushFromText);
+    eTxt.addEventListener('change', pushFromText);
+
+    del.addEventListener('click', ()=>{
+      const i = list.findIndex(x=>x.id===id);
+      if(i>-1) list.splice(i,1);
+      row.remove();
+      repaint();
+    });
+
+    updateReadouts();
+    repaint();
+  }
+
+  /* ---------- answer bar logic ---------- */
+  function checkAnswer(){
+    const h = Number(ansH.value);
+    const m = Number(ansM.value);
+    if(!Number.isInteger(h) || !Number.isInteger(m)){
+      ansStatus.textContent = 'Please enter whole numbers for hours and minutes.';
+      ansStatus.className = 'answerStatus no'; return;
+    }
+    if(h<0 || m<0 || m>=60){
+      ansStatus.textContent = 'Minutes must be 0–59 (hours ≥ 0).';
+      ansStatus.className = 'answerStatus no'; return;
+    }
+    const user = h*60 + m;
+    const truth = (q.end + (q.overMid?1440:0)) - q.start;
+    if(user === truth){
+      ansStatus.textContent = 'Correct!';
+      ansStatus.className = 'answerStatus ok';
+    }else{
+      ansStatus.textContent = 'Not yet. Try adjusting the sliders below to visualize the duration.';
+      ansStatus.className = 'answerStatus no';
+    }
+  }
+  function clearAnswer(){
+    ansH.value=''; ansM.value='';
+    ansStatus.textContent = '\u00A0';
+    ansStatus.className = 'answerStatus';
+  }
+
+  /* ---------- app flow ---------- */
+  function drawMain(){ drawWindow(viz, q, slidersMain); }
+  function resetSliders(){
+    slidersMain = [];
+    sliderStripMain.innerHTML = '';
+    addSliderRow(sliderStripMain, slidersMain);
+  }
+  function show(){
+    tStart.textContent = fmt24(q.start);
+    tEnd.textContent   = fmt24(q.end);
+    drawMain();
+    resetSliders();
+    clearAnswer();
+  }
+
+  /* ---------- events ---------- */
+  document.getElementById('addSliderMain').addEventListener('click', ()=> addSliderRow(sliderStripMain, slidersMain));
+  document.getElementById('checkAns').addEventListener('click', checkAnswer);
+  document.getElementById('clearAns').addEventListener('click', clearAnswer);
+  nextQBtn.addEventListener('click', ()=>{ q = makeQuestion(); show(); });
+
+  ansH.addEventListener('keydown', e=>{ if(e.key==='Enter') ansM.focus(); });
+  ansM.addEventListener('keydown', e=>{ if(e.key==='Enter') checkAnswer(); });
+
+  new ResizeObserver(()=>{ drawMain(); }).observe(document.body);
+
+  /* ---------- init ---------- */
+  show();
+})();
+</script>
+</body>
+</html>
