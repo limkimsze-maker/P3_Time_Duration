@@ -19,17 +19,19 @@
   }
 
   *{box-sizing:border-box}
+  html,body{height:100%}
   body{
-    margin:0; font:18px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Arial; color:var(--ink);
+    margin:0; font: clamp(16px,2.4vw,18px)/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial; color:var(--ink);
     background:
       radial-gradient(1200px 500px at 10% -10%, rgba(255,182,193,.35), transparent 40%),
       radial-gradient(1200px 500px at 110% -10%, rgba(173,216,230,.35), transparent 40%),
       linear-gradient(180deg,var(--sky1),var(--sky2) 60%);
+    -webkit-tap-highlight-color: transparent;
   }
   header{max-width:1200px;margin:20px auto 0;padding:0 16px}
-  h1{margin:0 0 6px;font-size:36px;letter-spacing:.3px}
-  .note{color:#334155;margin-bottom:6px;font-size:18px}
-  .credit{color:#6b7280;font-weight:900;margin-bottom:10px}
+  h1{margin:0 0 6px;font-size:clamp(20px,5.6vw,36px);letter-spacing:.3px}
+  .note{color:#334155;margin-bottom:6px;font-size:clamp(14px,3.6vw,18px)}
+  .credit{color:#6b7280;font-weight:900;margin-bottom:10px;font-size:clamp(13px,3.2vw,16px)}
   .credit b{color:#111827}
 
   main{max-width:1200px;margin:16px auto 28px;padding:0 16px}
@@ -38,7 +40,7 @@
     border:2px solid #e9ecef; border-radius:20px; padding:16px;
     box-shadow:0 10px 28px rgba(17,24,39,.12);
   }
-  .qtext{font-weight:900;font-size:22px;margin:6px 0 12px}
+  .qtext{font-weight:900;font-size:clamp(18px,4.8vw,22px);margin:6px 0 12px}
   .boxPill{display:inline-block;padding:6px 12px;border:2px solid #111827;border-radius:12px;background:#fff;font-weight:900;letter-spacing:.3px}
 
   .vizWrap{
@@ -60,13 +62,14 @@
   .answerInputs{display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
   .answerInputs label{font-weight:900}
   .answerInputs input{
-    width:110px; padding:10px 12px; border:2px solid var(--line); border-radius:10px;
-    font:900 18px/1 system-ui; text-align:center; background:#ffffffaa;
+    width:110px; padding:12px; border:2px solid var(--line); border-radius:10px;
+    font:900 clamp(16px,4.4vw,18px)/1 system-ui; text-align:center; background:#ffffffaa;
   }
   .answerBtns{display:flex; gap:10px; flex-wrap:wrap;}
   .answerBtns button{
-    padding:12px 16px;border:none;border-radius:12px;background:linear-gradient(135deg,#8b5cf6,#f472b6);
-    color:#fff;font-weight:900;cursor:pointer;font-size:16px;box-shadow:0 6px 12px rgba(139,92,246,.25);
+    padding:14px 16px;border:none;border-radius:12px;background:linear-gradient(135deg,#8b5cf6,#f472b6);
+    color:#fff;font-weight:900;cursor:pointer;font-size:clamp(14px,4.4vw,16px);box-shadow:0 6px 12px rgba(139,92,246,.25);
+    min-width:44px; min-height:44px; /* touch target */
   }
   .answerBtns .secondary{background:linear-gradient(135deg,#ffffff,#e5e7eb); color:#0f172a; border:2px solid var(--line); box-shadow:none}
   .answerStatus{grid-column:1 / -1; font-weight:900; min-height:1.2em}
@@ -79,41 +82,52 @@
       repeating-linear-gradient(45deg, #fafafa, #fafafa 14px, #fefce8 14px, #fefce8 28px);
     padding:10px
   }
-  .panelHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-  .panelTitle{font-weight:900;font-size:18px}
+  .panelHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:10px}
+  .panelTitle{font-weight:900;font-size:clamp(16px,4.4vw,18px)}
   .rowPeriod{
     display:grid;grid-template-columns:160px 220px 220px 1fr auto;
     gap:12px;align-items:center;padding:12px;border:2px solid var(--line);border-radius:12px;
     background:linear-gradient(135deg, #ffffff, #f1f5f9); margin-bottom:10px;font-size:18px;
     box-shadow:0 4px 10px rgba(148,163,184,.25);
   }
-  .badgeColor{display:inline-flex;align-items:center;gap:10px;font-weight:900;font-size:18px}
+  .badgeColor{display:inline-flex;align-items:center;gap:10px;font-weight:900;font-size:clamp(16px,4.4vw,18px)}
   .badgeDot{width:18px;height:18px;border-radius:50%;outline:2px solid #ffffff;box-shadow:0 0 0 2px rgba(0,0,0,.08)}
   .hmInputs{display:grid;grid-template-columns:1fr;gap:8px}
-  .hmInputs input{width:100%;padding:10px 12px;border:2px solid var(--line);border-radius:10px;font-weight:900;font-size:18px;text-align:center;letter-spacing:.5px;background:#fff}
+  .hmInputs input{width:100%;padding:12px;border:2px solid var(--line);border-radius:10px;font-weight:900;font-size:clamp(16px,4.4vw,18px);text-align:center;letter-spacing:.5px;background:#fff}
   .delBtn{background:linear-gradient(135deg,#ffffff,#e5e7eb);color:#0f172a;border:2px solid var(--line);padding:10px 12px;border-radius:10px;font-size:16px}
 
   /* Axis & labels */
-  .lab12{font:900 18px/1.05 system-ui,Segoe UI,Roboto,Arial; fill:var(--lab12)}
-  .lab24{font:800 18px/1.05 system-ui,Segoe UI,Roboto,Arial; fill:var(--lab24)}
+  .lab12{font:900 clamp(14px,4vw,18px)/1.05 system-ui,Segoe UI,Roboto,Arial; fill:var(--lab12)}
+  .lab24{font:800 clamp(14px,4vw,18px)/1.05 system-ui,Segoe UI,Roboto,Arial; fill:var(--lab24)}
   .tickHour{stroke:#0f172a;stroke-width:3}
   .tick10{stroke:#334155;stroke-width:2}
   .tick5{stroke:#94a3b8;stroke-width:1.5}
 
   /* Endpoint labels (boxed) */
-  .end12{font:900 20px/1.05 system-ui,Segoe UI,Roboto,Arial; fill:var(--lab12)}
-  .end24{font:800 18px/1.05 system-ui,Segoe UI,Roboto,Arial; fill:var(--lab24)}
-  .tagSmall{font:800 13px/1 system-ui,Segoe UI,Roboto,Arial; fill:#0f172a; opacity:.9}
+  .end12{font:900 clamp(16px,4.6vw,20px)/1.05 system-ui,Segoe UI,Roboto,Arial; fill:var(--lab12)}
+  .end24{font:800 clamp(14px,4vw,18px)/1.05 system-ui,Segoe UI,Roboto,Arial; fill:var(--lab24)}
+  .tagSmall{font:800 clamp(12px,3.6vw,13px)/1 system-ui,Segoe UI,Roboto,Arial; fill:#0f172a; opacity:.9}
 
   /* Duration text */
   .durOnBand{
-    font:900 22px/1.1 system-ui,Segoe UI,Roboto,Arial;
+    font:900 clamp(16px,4.8vw,22px)/1.1 system-ui,Segoe UI,Roboto,Arial;
     fill:#0f172a; paint-order:stroke; stroke:#ffffff; stroke-width:6px;
   }
 
   /* Time icons (emoji on colorful bubbles) */
-  .timeIcon{font: 900 24px/1.1 system-ui,Segoe UI,Apple Color Emoji,Segoe UI Emoji,Noto Color Emoji,Arial;}
+  .timeIcon{font: 900 clamp(18px,5vw,24px)/1.1 system-ui,Segoe UI,Apple Color Emoji,Segoe UI Emoji,Noto Color Emoji,Arial;}
   .bubble{opacity:.95; filter: drop-shadow(0 3px 6px rgba(0,0,0,.15));}
+
+  /* --- Mobile layout tweaks --- */
+  @media (max-width: 720px){
+    .answerBar{grid-template-columns:1fr;}
+    .answerInputs input{width:calc(50% - 5px); flex:1}
+    .answerBtns{width:100%}
+    .answerBtns button{flex:1}
+
+    .rowPeriod{ grid-template-columns:1fr; }
+    .panelHead{flex-wrap:wrap}
+  }
 </style>
 </head>
 <body>
@@ -171,11 +185,11 @@
   const fmt24=min=>`${pad(Math.floor(mod1440(min)/60))}${pad(mod1440(min)%60)}`;
   const fmt12=min=>{
     const m=mod1440(min); let h24=Math.floor(m/60), mi=m%60; const am=h24<12; let h=h24%12; if(h===0)h=12;
-    return `${h} ${pad(mi)} ${am?'AM':'PM'}`;
+    return `${h}:${pad(mi)} ${am?'AM':'PM'}`;
   };
   const toHourLabel=h24Raw=>{
     const h24=(h24Raw%24+24)%24; const am=h24<12; let h=h24%12; if(h===0)h=12;
-    return `${h} 00 ${am?'AM':'PM'}`;
+    return `${h}:00 ${am?'AM':'PM'}`;
   };
   const parseHHMM = (txt)=>{
     const s=(txt||'').trim();
@@ -228,6 +242,8 @@
   let lastWidth = 0, redrawScheduled = false;
 
   /* ---------- SVG helpers ---------- */
+  function isMobile(){ return window.matchMedia('(max-width: 720px)').matches; }
+
   function mountSVG(container, height){
     const s=document.createElementNS('http://www.w3.org/2000/svg','svg');
     const rect = container.getBoundingClientRect();
@@ -293,18 +309,18 @@
   /* ---------- draw window (renders all periods) ---------- */
   function drawWindow(container, question, periodsList){
     try{
-      const baseH = 560;
+      const mobile = isMobile();
+      const baseH = mobile ? Math.max(320, Math.min(520, Math.floor((visualViewport?.height || window.innerHeight)*0.55))) : 560;
       const H = baseH;
       const svg = mountSVG(container, H);
 
-      const padX = 40;
+      const padX = mobile ? 12 : 40;
       const rect = container.getBoundingClientRect();
       const W = Math.max(320, Math.floor(rect.width||container.clientWidth||1000));
 
-      const bandH = 360;
+      const bandH = mobile ? 280 : 360;
 
-      const cyBase  = baseH/2 + 10;  // timeline frame center
-      const cyBlack = cyBase + 76;   // lowered question line
+      const cyBase  = baseH/2 + (mobile? 4 : 10);  // timeline frame center
 
       const bandX0 = padX, bandX1 = W - padX, bandW = bandX1 - bandX0;
 
@@ -337,7 +353,7 @@
       svg.appendChild(border);
 
       // Axis ticks
-      const topPad = 120;
+      const topPad = mobile ? 90 : 120;
       const y0 = cyBase - bandH/2 + topPad;
       const lenHour = 44, len10 = 30, len5 = 18;
 
@@ -378,7 +394,7 @@
       line(svg, qX1, y0+120, qX1, y0 - 6, 2, '#334155', 'round', '6 6');
 
       // Period bands (solid)
-      const SH = 64;
+      const SH = mobile ? 52 : 64;
       const gapBelow = 18;
       const bandTopY = y0+120 + gapBelow;
       const durY = bandTopY + SH + 24;
@@ -425,15 +441,15 @@
     row.innerHTML = `
       <div class="badgeColor"><span class="badgeDot" style="background:${color}"></span> Period</div>
       <div class="hmInputs">
-        <input type="text" placeholder="Start HHMM" aria-label="Start HHMM">
+        <input type="text" placeholder="Start HHMM" aria-label="Start HHMM" inputmode="numeric" pattern="\\d*">
       </div>
       <div class="hmInputs">
-        <input type="text" placeholder="End HHMM" aria-label="End HHMM">
+        <input type="text" placeholder="End HHMM" aria-label="End HHMM" inputmode="numeric" pattern="\\d*">
       </div>
       <div style="font-weight:900;line-height:1.3">
         <div>Start: <span class="s24"></span> (<span class="s12"></span>)</div>
         <div>End: <span class="e24"></span> (<span class="e12"></span>)</div>
-        <div>Duration: <span class="dur" style="font-size:22px;"></span></div>
+        <div>Duration: <span class="dur" style="font-size:clamp(18px,5vw,22px);"></span></div>
       </div>
       <button class="delBtn" title="Remove">✕</button>
     `;
@@ -547,6 +563,11 @@
   }
   const ro = new ResizeObserver(()=>scheduleRedraw());
   ro.observe(viz);
+
+  // Also handle viewport height changes on mobile when the URL bar appears/disappears
+  window.addEventListener('resize', ()=>scheduleRedraw(true));
+  window.addEventListener('orientationchange', ()=>scheduleRedraw(true));
+  if (window.visualViewport){ visualViewport.addEventListener('resize', ()=>scheduleRedraw(true)); }
 
   /* ---------- events ---------- */
   document.getElementById('checkAns').addEventListener('click', checkAnswer);
